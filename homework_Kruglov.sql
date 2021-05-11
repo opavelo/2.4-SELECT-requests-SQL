@@ -1,25 +1,60 @@
-SELECT name, creation_date FROM album
-WHERE creation_date = 2018;
+SELECT gern_name, COUNT(performer_id) FROM gerne
+JOIN performergerne ON gerne.id = performergerne.gerne_id
+GROUP BY gern_name;
 
-SELECT track_name, track_length FROM tracks
-ORDER BY track_length DESC
-LIMIT 1;
+SELECT COUNT(track_name) FROM tracks
+WHERE album_id = (SELECT id FROM album
+WHERE creation_date = 2020 OR creation_date = 2019);
 
-SELECT track_name, track_length FROM tracks
-WHERE track_length = (SELECT max(track_length) FROM tracks);
+SELECT alb_name, AVG(track_length) FROM tracks
+JOIN album ON tracks.album_id = album.id
+GROUP BY alb_name;
 
-SELECT track_name, track_length FROM tracks
-WHERE track_length >= 210;
+SELECT per_name, alb_name  FROM performer
+JOIN performeralbum ON performer.id = performeralbum.performer_id
+JOIN album ON performeralbum.album_id = album.id
+WHERE creation_date != 2020;
 
-SELECT * FROM collection
-WHERE creation_date BETWEEN '2018-01-01' AND '2020-12-31';
+SELECT DISTINCT col_name, per_name FROM collection
+JOIN trackcollection ON trackcollection.collection_id = collection.id
+JOIN tracks ON trackcollection.track_id = tracks.id
+JOIN album ON tracks.album_id = album.id
+JOIN performeralbum ON performeralbum.album_id = album.id
+JOIN performer ON performer.id = performeralbum.performer_id
+WHERE per_name = 'Queen';
 
-SELECT performer FROM performer
-WHERE performer NOT LIKE '% %';
+SELECT per_name, alb_name, COUNT(gerne_id) FROM performer
+JOIN performergerne ON performer.id = performergerne.performer_id
+JOIN performeralbum ON performer.id = performeralbum.performer_id
+JOIN album ON performeralbum.album_id = album.id
+GROUP BY per_name, alb_name
+HAVING COUNT(gerne_id)>1;
 
 SELECT track_name FROM tracks
-WHERE track_name iLIKE '%my%'
-OR track_name iLIKE '%мой%';
+LEFT JOIN trackcollection ON tracks.id = trackcollection.track_id
+WHERE trackcollection.track_id IS NULL;
+
+SELECT per_name FROM tracks
+JOIN performeralbum ON tracks.album_id = performeralbum.album_id
+JOIN performer ON performer.id = performeralbum.performer_id
+WHERE track_length = (SELECT MIN(track_length) FROM tracks);
+
+SELECT alb_name, COUNT(tracks.id) count FROM tracks
+JOIN album ON tracks.album_id = album.id
+GROUP BY alb_name
+ORDER BY count ASC;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
