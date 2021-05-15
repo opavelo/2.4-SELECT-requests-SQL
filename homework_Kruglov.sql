@@ -39,10 +39,25 @@ JOIN performeralbum ON tracks.album_id = performeralbum.album_id
 JOIN performer ON performer.id = performeralbum.performer_id
 WHERE track_length = (SELECT MIN(track_length) FROM tracks);
 
-SELECT alb_name, COUNT(tracks.id) count FROM tracks
-JOIN album ON tracks.album_id = album.id
+SELECT alb_name, COUNT(qwer.id) 
+FROM tracks AS qwer
+JOIN album ON qwer.album_id = album.id
 GROUP BY alb_name
-ORDER BY count ASC;
+ORDER BY COUNT(qwer.id) ASC
+LIMIT 1;
+
+SELECT alb_name, count FROM (SELECT alb_name, COUNT(qwer.id) 
+FROM tracks AS qwer
+JOIN album ON qwer.album_id = album.id
+GROUP BY alb_name) AS qwer
+WHERE qwer.count = 3;
+
+WITH new_table AS (SELECT alb_name, COUNT(tracks.id) AS cnt
+FROM tracks
+JOIN album ON tracks.album_id = album.id
+GROUP BY alb_name)
+SELECT alb_name, cnt FROM new_table
+WHERE cnt = (SELECT MIN(cnt) FROM new_table);
 
 
 
